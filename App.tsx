@@ -122,13 +122,6 @@ export default function HomeScreen() {
     }
   }, []);
 
-  if (device == null)
-    return (
-      <View>
-        <Text>No Device</Text>
-      </View>
-    );
-
   const cameraRef = useRef<Camera | null>(null);
 
   const successToast = (text1: string, text2: string) => {
@@ -258,6 +251,14 @@ export default function HomeScreen() {
     }
     successToast('Removed Successfully', 'Your image is removed successfully');
   };
+
+  if (device == null) {
+    return (
+      <View>
+        <Text>No Device</Text>
+      </View>
+    );
+  }
 
   return (
     <SafeAreaView style={styles.container}>
