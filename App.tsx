@@ -8,7 +8,6 @@ import {
   ActivityIndicator,
   Modal,
   Switch,
-  SafeAreaView,
   ScrollView,
 } from 'react-native';
 import {launchImageLibrary} from 'react-native-image-picker';
@@ -262,254 +261,256 @@ export default function HomeScreen() {
   }
 
   return (
-    <SafeAreaProvider style={styles.container}>
-      <ScrollView>
-        {!isTaking && !registerPhotoUri && !uploadPhotoUri && (
-          <Text style={styles.title}>
-            This app is aimed at collecting human images to train machine
-            learning model.
-          </Text>
-        )}
-        {isTaking ? (
-          <Camera
-            ref={cameraRef}
-            style={[styles.camera]}
-            device={device}
-            isActive={true}
-            photo={true}
-          />
-        ) : (
-          (registerPhotoUri || uploadPhotoUri) && (
-            <View
-              style={{
-                height: 400,
-                justifyContent: 'center',
-                alignItems: 'center',
-              }}>
-              <Swiper showsPagination={false} loop={false} index={showIndex}>
-                {uploadPhotoUri && (
-                  <View style={{paddingHorizontal: 10}}>
-                    <Image src={uploadPhotoUri || ''} style={styles.image} />
-                    <View
-                      style={{
-                        flexDirection: 'row',
-                        justifyContent: 'space-between',
-                        alignItems: 'center',
-                        paddingHorizontal: 10,
-                      }}>
-                      <Text style={{color: '#6482AD', fontWeight: 'bold'}}>
-                        Image From Gallery
-                      </Text>
-                      <Pressable
-                        style={[styles.button, styles.deleteButton]}
-                        onPress={() => removeImage('upload')}>
-                        <Text style={{color: 'white'}}>Delete</Text>
-                      </Pressable>
-                    </View>
-                  </View>
-                )}
-                {registerPhotoUri && (
-                  <View style={{paddingHorizontal: 10}}>
-                    <Image src={registerPhotoUri || ''} style={styles.image} />
-                    <View
-                      style={{
-                        flexDirection: 'row',
-                        justifyContent: 'space-between',
-                        alignItems: 'center',
-                        paddingHorizontal: 10,
-                      }}>
-                      <Text style={{color: '#6482AD', fontWeight: 'bold'}}>
-                        Image From Camera
-                      </Text>
-                      <Pressable
-                        style={[styles.button, styles.deleteButton]}
-                        onPress={() => removeImage('take')}>
-                        <Text style={{color: 'white'}}>Delete</Text>
-                      </Pressable>
-                    </View>
-                  </View>
-                )}
-              </Swiper>
-            </View>
-          )
-        )}
-        <View style={{paddingHorizontal: 10}}>
-          <View>
-            {isTaking ? (
+    <SafeAreaProvider>
+      <View style={[styles.container, { paddingTop: 150 }]}>
+        <ScrollView>
+          {!isTaking && !registerPhotoUri && !uploadPhotoUri && (
+            <Text style={styles.title}>
+              This app is aimed at collecting human images to train machine
+              learning model.
+            </Text>
+          )}
+          {isTaking ? (
+            <Camera
+              ref={cameraRef}
+              style={[styles.camera]}
+              device={device}
+              isActive={true}
+              photo={true}
+            />
+          ) : (
+            (registerPhotoUri || uploadPhotoUri) && (
               <View
                 style={{
-                  flexDirection: 'row',
+                  height: 400,
                   justifyContent: 'center',
                   alignItems: 'center',
-                  gap: 40,
                 }}>
-                <Pressable
-                  style={[styles.button, styles.secondaryButton]}
-                  onPress={() => setIsTaking(false)}>
-                  <Text>Cancel</Text>
-                </Pressable>
-                <Pressable
-                  style={[styles.button, styles.scanButton]}
-                  onPress={takePicture}>
-                  <Text>Shoot Picture</Text>
-                </Pressable>
+                <Swiper showsPagination={false} loop={false} index={showIndex}>
+                  {uploadPhotoUri && (
+                    <View style={{paddingHorizontal: 10}}>
+                      <Image src={uploadPhotoUri || ''} style={styles.image} />
+                      <View
+                        style={{
+                          flexDirection: 'row',
+                          justifyContent: 'space-between',
+                          alignItems: 'center',
+                          paddingHorizontal: 10,
+                        }}>
+                        <Text style={{color: '#6482AD', fontWeight: 'bold'}}>
+                          Image From Gallery
+                        </Text>
+                        <Pressable
+                          style={[styles.button, styles.deleteButton]}
+                          onPress={() => removeImage('upload')}>
+                          <Text style={{color: 'white'}}>Delete</Text>
+                        </Pressable>
+                      </View>
+                    </View>
+                  )}
+                  {registerPhotoUri && (
+                    <View style={{paddingHorizontal: 10}}>
+                      <Image src={registerPhotoUri || ''} style={styles.image} />
+                      <View
+                        style={{
+                          flexDirection: 'row',
+                          justifyContent: 'space-between',
+                          alignItems: 'center',
+                          paddingHorizontal: 10,
+                        }}>
+                        <Text style={{color: '#6482AD', fontWeight: 'bold'}}>
+                          Image From Camera
+                        </Text>
+                        <Pressable
+                          style={[styles.button, styles.deleteButton]}
+                          onPress={() => removeImage('take')}>
+                          <Text style={{color: 'white'}}>Delete</Text>
+                        </Pressable>
+                      </View>
+                    </View>
+                  )}
+                </Swiper>
               </View>
-            ) : (
-              <View
-                style={{
-                  flexDirection: 'row',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  gap: 10,
-                }}>
-                <Pressable
-                  style={styles.button}
-                  onPress={() => {
-                    setRuleModal(!ruleModal);
-                    setButtonAction('upload');
-                  }}>
-                  <Text style={styles.text}>Upload your photo</Text>
-                </Pressable>
-                <Pressable
-                  style={styles.button}
-                  onPress={() => {
-                    setRuleModal(!ruleModal);
-                    setButtonAction('take');
-                  }}>
-                  <Text style={styles.text}>Take your photo</Text>
-                </Pressable>
-              </View>
-            )}
-          </View>
-          <Modal
-            animationType="slide"
-            transparent={true}
-            visible={ruleModal}
-            onRequestClose={() => {
-              setRuleModal(!ruleModal);
-            }}>
-            <View style={styles.centeredView}>
-              <View style={styles.modalView}>
-                <Text style={styles.modalText}>
-                  A face must be appeared clearly in the photo
-                </Text>
+            )
+          )}
+          <View style={{paddingHorizontal: 10}}>
+            <View>
+              {isTaking ? (
                 <View
                   style={{
                     flexDirection: 'row',
-                    gap: 20,
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    gap: 40,
                   }}>
                   <Pressable
                     style={[styles.button, styles.secondaryButton]}
-                    onPress={() => setRuleModal(!ruleModal)}>
-                    <Text style={styles.textStyle}>I won't</Text>
+                    onPress={() => setIsTaking(false)}>
+                    <Text>Cancel</Text>
                   </Pressable>
                   <Pressable
-                    style={[styles.button, styles.primaryButton]}
-                    onPress={() => {
-                      buttonAction === 'upload'
-                        ? pickImage()
-                        : handlePressRegister();
-                    }}>
-                    <Text style={styles.textStyle}>I know, I will</Text>
+                    style={[styles.button, styles.scanButton]}
+                    onPress={takePicture}>
+                    <Text>Shoot Picture</Text>
                   </Pressable>
                 </View>
+              ) : (
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    gap: 10,
+                  }}>
+                  <Pressable
+                    style={styles.button}
+                    onPress={() => {
+                      setRuleModal(!ruleModal);
+                      setButtonAction('upload');
+                    }}>
+                    <Text style={styles.text}>Upload your photo</Text>
+                  </Pressable>
+                  <Pressable
+                    style={styles.button}
+                    onPress={() => {
+                      setRuleModal(!ruleModal);
+                      setButtonAction('take');
+                    }}>
+                    <Text style={styles.text}>Take your photo</Text>
+                  </Pressable>
+                </View>
+              )}
+            </View>
+            <Modal
+              animationType="slide"
+              transparent={true}
+              visible={ruleModal}
+              onRequestClose={() => {
+                setRuleModal(!ruleModal);
+              }}>
+              <View style={styles.centeredView}>
+                <View style={styles.modalView}>
+                  <Text style={styles.modalText}>
+                    A face must be appeared clearly in the photo
+                  </Text>
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      gap: 20,
+                    }}>
+                    <Pressable
+                      style={[styles.button, styles.secondaryButton]}
+                      onPress={() => setRuleModal(!ruleModal)}>
+                      <Text style={styles.textStyle}>I won't</Text>
+                    </Pressable>
+                    <Pressable
+                      style={[styles.button, styles.primaryButton]}
+                      onPress={() => {
+                        buttonAction === 'upload'
+                          ? pickImage()
+                          : handlePressRegister();
+                      }}>
+                      <Text style={styles.textStyle}>I know, I will</Text>
+                    </Pressable>
+                  </View>
+                </View>
               </View>
+            </Modal>
+            <Modal
+              animationType="slide"
+              transparent={true}
+              visible={loadingModal}
+              onRequestClose={() => {
+                setLoadingModal(!loadingModal);
+              }}>
+              <View style={styles.loadingModalView}>
+                <ActivityIndicator size="large" />
+              </View>
+            </Modal>
+            <View
+              style={{
+                flexDirection: 'row',
+                marginVertical: 10,
+                justifyContent: 'center',
+              }}>
+              <Text style={styles.text}>Are these photos same person?</Text>
+              <Switch
+                trackColor={{false: '#767577', true: '#81b0ff'}}
+                thumbColor={samePerson ? '#f5dd4b' : '#f4f3f4'}
+                ios_backgroundColor="#3e3e3e"
+                onValueChange={() => setSamePerson(!samePerson)}
+                value={samePerson}
+              />
             </View>
-          </Modal>
-          <Modal
-            animationType="slide"
-            transparent={true}
-            visible={loadingModal}
-            onRequestClose={() => {
-              setLoadingModal(!loadingModal);
-            }}>
-            <View style={styles.loadingModalView}>
-              <ActivityIndicator size="large" />
-            </View>
-          </Modal>
-          <View
-            style={{
-              flexDirection: 'row',
-              marginVertical: 10,
-              justifyContent: 'center',
-            }}>
-            <Text style={styles.text}>Are these photos same person?</Text>
-            <Switch
-              trackColor={{false: '#767577', true: '#81b0ff'}}
-              thumbColor={samePerson ? '#f5dd4b' : '#f4f3f4'}
-              ios_backgroundColor="#3e3e3e"
-              onValueChange={() => setSamePerson(!samePerson)}
-              value={samePerson}
-            />
+            {isLoading && <ActivityIndicator size="large" />}
+            {registerPhoto && uploadPhoto && !isLoading && (
+              <Pressable
+                style={[styles.button, styles.primaryButton]}
+                onPress={matchingFaces}>
+                <Text style={{color: 'white'}}>Submit</Text>
+              </Pressable>
+            )}
+            {errorMessage && !isLoading && (
+              <View style={[styles.responseBox, {borderColor: 'red'}]}>
+                <Text style={styles.errorText}>{errorMessage}</Text>
+              </View>
+            )}
+            {deepfaceResponse && dlibResponse && !isLoading && (
+              <Text style={[styles.successText, {marginVertical: 20}]}>
+                Submitted Successfully! You can now close the app
+              </Text>
+            )}
+            {deepfaceResponse && !isLoading && (
+              <View style={styles.responseBox}>
+                <Text style={[styles.text, {fontWeight: 'bold'}]}>Deep Face</Text>
+                <Text style={styles.text}>
+                  Distance: {deepfaceResponse.distance?.toPrecision(3)}
+                </Text>
+                <Text style={styles.text}>
+                  Execution time:{' '}
+                  {deepfaceResponse.execution_time?.toPrecision(3)} seconds
+                </Text>
+                <View
+                  style={{flexDirection: 'row', alignItems: 'center', gap: 10}}>
+                  <Text style={styles.text}>Result:</Text>
+                  <Text
+                    style={[
+                      styles.text,
+                      deepfaceResponse.matches
+                        ? styles.trueBadge
+                        : styles.falseBadge,
+                    ]}>
+                    {deepfaceResponse.matches ? 'True' : 'False'}
+                  </Text>
+                </View>
+              </View>
+            )}
+            {dlibResponse && !isLoading && (
+              <View style={styles.responseBox}>
+                <Text style={[styles.text, {fontWeight: 'bold'}]}>Dlib</Text>
+                <Text style={styles.text}>
+                  Distance: {dlibResponse.distance?.toPrecision(3)}
+                </Text>
+                <Text style={styles.text}>
+                  Execution time: {dlibResponse.execution_time?.toPrecision(3)}{' '}
+                  seconds
+                </Text>
+                <View
+                  style={{flexDirection: 'row', alignItems: 'center', gap: 10}}>
+                  <Text style={styles.text}>Result:</Text>
+                  <Text
+                    style={[
+                      styles.text,
+                      dlibResponse.matches ? styles.trueBadge : styles.falseBadge,
+                    ]}>
+                    {dlibResponse.matches ? 'True' : 'False'}
+                  </Text>
+                </View>
+              </View>
+            )}
           </View>
-          {isLoading && <ActivityIndicator size="large" />}
-          {registerPhoto && uploadPhoto && !isLoading && (
-            <Pressable
-              style={[styles.button, styles.primaryButton]}
-              onPress={matchingFaces}>
-              <Text style={{color: 'white'}}>Submit</Text>
-            </Pressable>
-          )}
-          {errorMessage && !isLoading && (
-            <View style={[styles.responseBox, {borderColor: 'red'}]}>
-              <Text style={styles.errorText}>{errorMessage}</Text>
-            </View>
-          )}
-          {deepfaceResponse && dlibResponse && !isLoading && (
-            <Text style={[styles.successText, {marginVertical: 20}]}>
-              Submitted Successfully! You can now close the app
-            </Text>
-          )}
-          {deepfaceResponse && !isLoading && (
-            <View style={styles.responseBox}>
-              <Text style={[styles.text, {fontWeight: 'bold'}]}>Deep Face</Text>
-              <Text style={styles.text}>
-                Distance: {deepfaceResponse.distance?.toPrecision(3)}
-              </Text>
-              <Text style={styles.text}>
-                Execution time:{' '}
-                {deepfaceResponse.execution_time?.toPrecision(3)} seconds
-              </Text>
-              <View
-                style={{flexDirection: 'row', alignItems: 'center', gap: 10}}>
-                <Text style={styles.text}>Result:</Text>
-                <Text
-                  style={[
-                    styles.text,
-                    deepfaceResponse.matches
-                      ? styles.trueBadge
-                      : styles.falseBadge,
-                  ]}>
-                  {deepfaceResponse.matches ? 'True' : 'False'}
-                </Text>
-              </View>
-            </View>
-          )}
-          {dlibResponse && !isLoading && (
-            <View style={styles.responseBox}>
-              <Text style={[styles.text, {fontWeight: 'bold'}]}>Dlib</Text>
-              <Text style={styles.text}>
-                Distance: {dlibResponse.distance?.toPrecision(3)}
-              </Text>
-              <Text style={styles.text}>
-                Execution time: {dlibResponse.execution_time?.toPrecision(3)}{' '}
-                seconds
-              </Text>
-              <View
-                style={{flexDirection: 'row', alignItems: 'center', gap: 10}}>
-                <Text style={styles.text}>Result:</Text>
-                <Text
-                  style={[
-                    styles.text,
-                    dlibResponse.matches ? styles.trueBadge : styles.falseBadge,
-                  ]}>
-                  {dlibResponse.matches ? 'True' : 'False'}
-                </Text>
-              </View>
-            </View>
-          )}
-        </View>
-      </ScrollView>
+        </ScrollView>
+      </View>
       <Toast />
     </SafeAreaProvider>
   );
