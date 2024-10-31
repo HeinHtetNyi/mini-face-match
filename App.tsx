@@ -20,6 +20,7 @@ import {
 import * as RNFS from 'react-native-fs';
 import Swiper from 'react-native-swiper';
 import Toast from 'react-native-toast-message';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 const convertToBase64 = async (filePath: string): Promise<string> => {
   try {
@@ -261,7 +262,7 @@ export default function HomeScreen() {
   }
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaProvider style={styles.container}>
       <ScrollView>
         {!isTaking && !registerPhotoUri && !uploadPhotoUri && (
           <Text style={styles.title}>
@@ -510,7 +511,7 @@ export default function HomeScreen() {
         </View>
       </ScrollView>
       <Toast />
-    </SafeAreaView>
+    </SafeAreaProvider>
   );
 }
 

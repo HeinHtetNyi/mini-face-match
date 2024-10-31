@@ -1305,6 +1305,8 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
+  - react-native-safe-area-context (4.13.1):
+    - React-Core
   - React-nativeconfig (0.75.1)
   - React-NativeModulesApple (0.75.1):
     - glog
@@ -1577,11 +1579,11 @@ PODS:
   - RNPermissions (4.1.5):
     - React-Core
   - SocketRocket (0.7.0)
-  - VisionCamera (4.5.3):
-    - VisionCamera/Core (= 4.5.3)
-    - VisionCamera/React (= 4.5.3)
-  - VisionCamera/Core (4.5.3)
-  - VisionCamera/React (4.5.3):
+  - VisionCamera (4.6.0):
+    - VisionCamera/Core (= 4.6.0)
+    - VisionCamera/React (= 4.6.0)
+  - VisionCamera/Core (4.6.0)
+  - VisionCamera/React (4.6.0):
     - React-Core
   - Yoga (0.0.0)
 
@@ -1624,6 +1626,7 @@ DEPENDENCIES:
   - React-Mapbuffer (from `../node_modules/react-native/ReactCommon`)
   - React-microtasksnativemodule (from `../node_modules/react-native/ReactCommon/react/nativemodule/microtasks`)
   - react-native-image-picker (from `../node_modules/react-native-image-picker`)
+  - react-native-safe-area-context (from `../node_modules/react-native-safe-area-context`)
   - React-nativeconfig (from `../node_modules/react-native/ReactCommon`)
   - React-NativeModulesApple (from `../node_modules/react-native/ReactCommon/react/nativemodule/core/platform/ios`)
   - React-perflogger (from `../node_modules/react-native/ReactCommon/reactperflogger`)
@@ -1742,6 +1745,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/react/nativemodule/microtasks"
   react-native-image-picker:
     :path: "../node_modules/react-native-image-picker"
+  react-native-safe-area-context:
+    :path: "../node_modules/react-native-safe-area-context"
   React-nativeconfig:
     :path: "../node_modules/react-native/ReactCommon"
   React-NativeModulesApple:
@@ -1851,6 +1856,7 @@ SPEC CHECKSUMS:
   React-Mapbuffer: 08a80638581919dc3931d1dbdc9e2f4a6a446138
   React-microtasksnativemodule: 5a66c4c98a5578fbed3d41c98d5cd8728a5d5ade
   react-native-image-picker: 5bd900eec966c8f9fe32c5ec844afcd71d052030
+  react-native-safe-area-context: 004fe00b8c5aae5d57de1c27ff728cf6d3918b03
   React-nativeconfig: 174354b3e91ae72f95f1e4cb7c66af1b70209dd2
   React-NativeModulesApple: 81a10481d8d1ff9e1ba92cb96b986076d14b6672
   React-perflogger: 7c4e97b47d8bc58c03fad1a6b97d96181b59aa41
@@ -1882,7 +1888,7 @@ SPEC CHECKSUMS:
   RNFS: 4ac0f0ea233904cb798630b3c077808c06931688
   RNPermissions: 294531ede5a64d1528463e88fffef05675842042
   SocketRocket: abac6f5de4d4d62d24e11868d7a2f427e0ef940d
-  VisionCamera: cb84d0d8485b3e67c91b62931d3aa88f49747c92
+  VisionCamera: 637b702faeb698fecdb29208068a189a10ea0ab5
   Yoga: 01d87dd4b7b305f68d039a946815e8658d9cbb51
 
 PODFILE CHECKSUM: bba15a93c364246a32045e0967e705d743d67a3a
