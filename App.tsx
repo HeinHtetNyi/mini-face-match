@@ -9,6 +9,7 @@ import {
   Modal,
   Switch,
   ScrollView,
+  Platform
 } from 'react-native';
 import {launchImageLibrary} from 'react-native-image-picker';
 import {
@@ -146,12 +147,13 @@ export default function HomeScreen() {
     if (cameraRef.current) {
       try {
         const photo = await cameraRef.current.takePhoto();
-        const based64Register = await convertToBase64(`file://${photo.path}`);
+        const photoPath = Platform.OS === 'android' ? `file://${photo.path}` : photo.path;
+        const based64Register = await convertToBase64(photoPath);
         setLoadingModal(true);
         setIsTaking(false);
         await detectFace(based64Register);
         successToast('Uploaded Successfully', "Right! That's a valid image!");
-        setRegisterPhotoUri(`file://${photo.path}`);
+        setRegisterPhotoUri(photoPath);
         setRegisterPhoto(based64Register);
         setShowIndex(1);
       } catch (error) {
@@ -310,7 +312,7 @@ export default function HomeScreen() {
                   )}
                   {registerPhotoUri && (
                     <View style={{paddingHorizontal: 10}}>
-                      <Image src={registerPhotoUri || ''} style={styles.image} />
+                      <Image source={{ uri: registerPhotoUri }} style={styles.image} />
                       <View
                         style={{
                           flexDirection: 'row',
@@ -527,12 +529,11 @@ const styles = StyleSheet.create({
   camera: {
     width: '100%',
     height: 450,
-    alignSelf: 'center',
     position: 'relative',
   },
   image: {
     width: '100%',
-    height: 350,
+    height: 450,
     borderRadius: 15,
     objectFit: 'cover',
   },
