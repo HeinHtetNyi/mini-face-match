@@ -2,11 +2,11 @@ import React, {useEffect, useRef, useState} from 'react';
 import {
   ActivityIndicator,
   Pressable,
-  SafeAreaView,
   ScrollView,
   StyleSheet,
   Text,
   View,
+  Platform,
 } from 'react-native';
 import * as RNFS from 'react-native-fs';
 import {launchImageLibrary} from 'react-native-image-picker';
@@ -42,21 +42,28 @@ const compareFaces = async (
   registerPhoto: string,
   feedback: boolean,
 ): Promise<any> => {
-  const url = 'http://103.94.54.195:3000/api/face-compare';
+  const url = 'http://192.168.1.8/api/face-compare';
 
-  const body = JSON.stringify({
-    register_image: uploadPhoto,
-    scan_image: registerPhoto,
-    feedback: feedback ? 'Yes' : 'No',
+  const formData = new FormData();
+  formData.append('scan_image', {
+    uri: uploadPhoto,
+    name: 'scan_image.jpg',
+    type: 'image/jpeg',
   });
+  formData.append('register_image', {
+    uri: registerPhoto,
+    name: 'register_image.jpg',
+    type: 'image/jpeg',
+  });
+  formData.append('feedback', feedback ? 'Yes' : 'No');
 
   try {
     const response = await fetch(url, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
+        'Content-Type': 'multipart/form-data',
       },
-      body: body,
+      body: formData,
     });
     if (!response.ok) {
       throw new Error(`HTTP error! Status: ${response.status}`);
@@ -71,17 +78,20 @@ const compareFaces = async (
 };
 
 const detectFace = async (image: string) => {
-  const url = 'http://103.94.54.195:3000/api/face-detect';
-  const body = JSON.stringify({
-    register_image: image,
+  const url = 'http://192.168.1.8/api/face-detect';
+  const formData = new FormData();
+  formData.append('image', {
+    uri: image,
+    name: 'image.jpg',
+    type: 'image/jpeg',
   });
   try {
     const response = await fetch(url, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
+        'Content-Type': 'multipart/form-data',
       },
-      body: body,
+      body: formData,
     });
     if (!response.ok) {
       throw new Error(`HTTP error! Status: ${response.status}`);
@@ -165,7 +175,7 @@ export default function HomeScreen() {
         const based64Register = await convertToBase64(photoPath);
         setLoadingModal(true);
         setIsTaking(false);
-        await detectFace(based64Register);
+        await detectFace(photoPath);
         successToast('Uploaded Successfully', "Right! That's a valid image!");
         setRegisterPhotoUri(photoPath);
         setRegisterPhoto(based64Register);
@@ -198,7 +208,7 @@ export default function HomeScreen() {
         const based64Register = await convertToBase64(
           result.assets[0].uri || '',
         );
-        await detectFace(based64Register);
+        await detectFace(result.assets[0].uri || '');
         successToast('Uploaded Successfully', "Right! That's a valid image!");
         setUploadPhoto(based64Register);
         setUploadPhotoUri(result.assets[0].uri || '');
@@ -219,8 +229,8 @@ export default function HomeScreen() {
     setDlibResponse(null);
     try {
       const response = await compareFaces(
-        uploadPhoto || '',
-        registerPhoto || '',
+        uploadPhotoUri || '',
+        registerPhotoUri || '',
         samePerson,
       );
       if (response) {
