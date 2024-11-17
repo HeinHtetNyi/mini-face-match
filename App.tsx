@@ -16,6 +16,7 @@ import {
   useCameraDevice,
   useCameraPermission,
 } from 'react-native-vision-camera';
+import {SafeAreaProvider} from 'react-native-safe-area-context';
 import ImageSwiper from './components/ImageSwiper';
 import MainButtons from './components/MainButtons';
 import ShootButtons from './components/ShootButtons';
@@ -159,12 +160,14 @@ export default function HomeScreen() {
     if (cameraRef.current) {
       try {
         const photo = await cameraRef.current.takePhoto();
-        const based64Register = await convertToBase64(`file://${photo.path}`);
+        const photoPath =
+          Platform.OS === 'android' ? `file://${photo.path}` : photo.path;
+        const based64Register = await convertToBase64(photoPath);
         setLoadingModal(true);
         setIsTaking(false);
         await detectFace(based64Register);
         successToast('Uploaded Successfully', "Right! That's a valid image!");
-        setRegisterPhotoUri(`file://${photo.path}`);
+        setRegisterPhotoUri(photoPath);
         setRegisterPhoto(based64Register);
         setShowIndex(1);
       } catch (error) {
@@ -277,86 +280,91 @@ export default function HomeScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <ScrollView>
-        {!isTaking && !registerPhotoUri && !uploadPhotoUri && (
-          <Text style={styles.title}>
-            This app is aimed at collecting human images to train machine
-            learning model.
-          </Text>
-        )}
-        {isTaking ? (
-          <Camera
-            ref={cameraRef}
-            style={[styles.camera]}
-            device={device}
-            isActive={true}
-            photo={true}
-          />
-        ) : (
-          (registerPhotoUri || uploadPhotoUri) && (
-            <ImageSwiper
-              uploadPhotoUri={uploadPhotoUri}
-              registerPhotoUri={registerPhotoUri}
-              showIndex={showIndex}
-              isLoading={isLoading}
-              removeImage={removeImage}
+    <SafeAreaProvider>
+      <View style={styles.container}>
+        <ScrollView>
+          {!isTaking && !registerPhotoUri && !uploadPhotoUri && (
+            <Text style={styles.title}>
+              This app is aimed at collecting human images to train machine
+              learning model.
+            </Text>
+          )}
+          {isTaking ? (
+            <Camera
+              ref={cameraRef}
+              style={[styles.camera]}
+              device={device}
+              isActive={true}
+              photo={true}
             />
-          )
-        )}
-        <View style={{paddingHorizontal: 10}}>
-          <View>
-            {isTaking ? (
-              <ShootButtons
-                onPressCancel={onPressShootCancel}
-                takePicture={takePicture}
+          ) : (
+            (registerPhotoUri || uploadPhotoUri) && (
+              <ImageSwiper
+                uploadPhotoUri={uploadPhotoUri}
+                registerPhotoUri={registerPhotoUri}
+                showIndex={showIndex}
+                isLoading={isLoading}
+                removeImage={removeImage}
               />
-            ) : (
-              <MainButtons isLoading={isLoading} onPress={onPressMainButton} />
+            )
+          )}
+          <View style={{paddingHorizontal: 10}}>
+            <View>
+              {isTaking ? (
+                <ShootButtons
+                  onPressCancel={onPressShootCancel}
+                  takePicture={takePicture}
+                />
+              ) : (
+                <MainButtons
+                  isLoading={isLoading}
+                  onPress={onPressMainButton}
+                />
+              )}
+            </View>
+            <RuleModal
+              ruleModal={ruleModal}
+              onPressYes={() => {
+                buttonAction === 'upload' ? pickImage() : handlePressRegister();
+              }}
+              onPressNo={() => setRuleModal(!ruleModal)}
+              onRequestClose={() => {
+                setRuleModal(!ruleModal);
+              }}
+            />
+            <LoadingModal
+              loadingModal={loadingModal}
+              onRequestClose={() => {
+                setLoadingModal(!loadingModal);
+              }}
+            />
+            <FeedbackSwitch
+              isLoading={isLoading}
+              samePerson={samePerson}
+              onValueChange={() => setSamePerson(!samePerson)}
+            />
+            {isLoading && <ActivityIndicator size="large" />}
+            {registerPhoto && uploadPhoto && !isLoading && (
+              <Pressable
+                style={[styles.button, styles.primaryButton]}
+                onPress={matchingFaces}>
+                <Text style={{color: 'white'}}>Submit</Text>
+              </Pressable>
+            )}
+            {errorMessage && !isLoading && (
+              <ErrorResponseBox errorMessage={errorMessage} />
+            )}
+            {deepfaceResponse && !isLoading && (
+              <DeepFaceResponseBox deepfaceResponse={deepfaceResponse} />
+            )}
+            {dlibResponse && !isLoading && (
+              <DlibResponseBox dlibResponse={dlibResponse} />
             )}
           </View>
-          <RuleModal
-            ruleModal={ruleModal}
-            onPressYes={() => {
-              buttonAction === 'upload' ? pickImage() : handlePressRegister();
-            }}
-            onPressNo={() => setRuleModal(!ruleModal)}
-            onRequestClose={() => {
-              setRuleModal(!ruleModal);
-            }}
-          />
-          <LoadingModal
-            loadingModal={loadingModal}
-            onRequestClose={() => {
-              setLoadingModal(!loadingModal);
-            }}
-          />
-          <FeedbackSwitch
-            isLoading={isLoading}
-            samePerson={samePerson}
-            onValueChange={() => setSamePerson(!samePerson)}
-          />
-          {isLoading && <ActivityIndicator size="large" />}
-          {registerPhoto && uploadPhoto && !isLoading && (
-            <Pressable
-              style={[styles.button, styles.primaryButton]}
-              onPress={matchingFaces}>
-              <Text style={{color: 'white'}}>Submit</Text>
-            </Pressable>
-          )}
-          {errorMessage && !isLoading && (
-            <ErrorResponseBox errorMessage={errorMessage} />
-          )}
-          {deepfaceResponse && !isLoading && (
-            <DeepFaceResponseBox deepfaceResponse={deepfaceResponse} />
-          )}
-          {dlibResponse && !isLoading && (
-            <DlibResponseBox dlibResponse={dlibResponse} />
-          )}
-        </View>
-      </ScrollView>
-      <Toast />
-    </SafeAreaView>
+        </ScrollView>
+        <Toast />
+      </View>
+    </SafeAreaProvider>
   );
 }
 
@@ -371,7 +379,6 @@ const styles = StyleSheet.create({
   camera: {
     width: '100%',
     height: 450,
-    alignSelf: 'center',
     position: 'relative',
   },
   button: {
